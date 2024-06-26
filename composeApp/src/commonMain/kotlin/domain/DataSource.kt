@@ -16,5 +16,6 @@ data class StateUi(
         body = "",
         createdDate = 0L,
         updatedDate = 0L,
-    )
+    ),
+    val selectedSortIndex:Int = 0
 )

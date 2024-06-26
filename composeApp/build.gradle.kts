@@ -40,6 +40,8 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.koin.android)
+            implementation(libs.koin.androidx.compose)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -54,6 +56,10 @@ kotlin {
             implementation(libs.sqlite.bundled)
             implementation(libs.kotlinx.datetime)
             implementation(libs.androidx.lifecycle.viewmodel)
+            implementation(libs.datastore.preferences)
+            implementation(libs.atomicfu)
+            api(libs.koin.core)
+            implementation(libs.koin.compose)
         }
     }
 }

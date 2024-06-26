@@ -198,7 +198,7 @@ fun EditScreen(viewModel: MainViewModel, stateUi: StateUi, navController: NavHos
                                                 body = body.trim(),
                                                 createdDate = if(note.createdDate == 0L) DateTimeUtil.toEpochMillis(DateTimeUtil.now()) else note.createdDate,
                                                 updatedDate = DateTimeUtil.toEpochMillis(DateTimeUtil.now()),
-                                                colorHex = if (selectedColorIndex != -1) Notes.colors[selectedColorIndex] else Notes.generateRandomColor()
+                                                colorHex = if (selectedColorIndex != -1) Notes.colors[selectedColorIndex] else note.colorHex
                                             )
                                         ) { it ->
                                             if (it != (-1L) || note.id!=null) {

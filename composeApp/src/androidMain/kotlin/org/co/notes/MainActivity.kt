@@ -4,6 +4,7 @@ import App
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.remember
 import org.co.notes.database.getNotesDatabase
 
 class MainActivity : ComponentActivity() {
@@ -11,7 +12,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            App(getNotesDatabase(applicationContext).notesDao())
+            val notesDao = remember {
+                getNotesDatabase(applicationContext).notesDao()
+            }
+            App()
         }
     }
 }

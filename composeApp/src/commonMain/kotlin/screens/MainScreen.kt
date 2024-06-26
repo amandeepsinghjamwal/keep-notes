@@ -84,6 +84,9 @@ fun MainScreen(mainViewModel: MainViewModel, stateUi: StateUi, navController: Na
     LaunchedEffect(stateUi.notesList) {
         println("This is notes list in la ${stateUi.notesList}")
     }
+    LaunchedEffect(stateUi.selectedSortIndex){
+        println("This is notes list in la ${stateUi.selectedSortIndex}")
+    }
     val fontFamily = FontFamily(Font(Res.font.nunito_regular, FontWeight.Normal, FontStyle.Normal))
     LaunchedEffect(Unit) {
         mainViewModel.updateSelectedModel(
@@ -106,9 +109,11 @@ fun MainScreen(mainViewModel: MainViewModel, stateUi: StateUi, navController: Na
         mutableStateOf(false)
     }
     var selectedIndex by remember {
-        mutableIntStateOf(0)
+        mutableIntStateOf(stateUi.selectedSortIndex)
     }
-
+    LaunchedEffect(stateUi.selectedSortIndex){
+        selectedIndex = stateUi.selectedSortIndex
+    }
     var showMenuOptions by remember {
         mutableStateOf(false)
     }
@@ -187,8 +192,8 @@ fun MainScreen(mainViewModel: MainViewModel, stateUi: StateUi, navController: Na
                                         searchQuery,
                                         ignoreCase = true
                                     )
-                                }) {
-                                    Note(Modifier, it.title, fontFamily, Color(it.colorHex)) {
+                                }, key = {it.id!!}) {
+                                    Note(Modifier.animateItemPlacement(), it.title, fontFamily, Color(it.colorHex)) {
                                         mainViewModel.updateSelectedModel(it)
                                         navController.navigate(Constants.EDIT_SCREEN)
                                     }
@@ -247,9 +252,11 @@ fun MainScreen(mainViewModel: MainViewModel, stateUi: StateUi, navController: Na
             }
         }
         if (showFilterDialog) {
-            SortDialog(selectedIndex, onDone = {
+            SortDialog(selectedIndex, onDone = {isCancel->
                 showFilterDialog = !showFilterDialog
-                mainViewModel.sortList(selectedIndex)
+                if(!isCancel){
+                    mainViewModel.changeSortIndex(selectedIndex)
+                }
             }) {
                 selectedIndex = it
             }
@@ -258,11 +265,11 @@ fun MainScreen(mainViewModel: MainViewModel, stateUi: StateUi, navController: Na
 }
 
 @Composable
-fun SortDialog(selectedIndex: Int, onDone: () -> Unit, changeSelectedIndex: (Int) -> Unit) {
+fun SortDialog(selectedIndex: Int, onDone: (isCancel:Boolean) -> Unit, changeSelectedIndex: (Int) -> Unit) {
     AlertDialog(
-        title = { Text("Sort By") },
-        onDismissRequest = { onDone() },
-        confirmButton = { Text("Apply", modifier = Modifier.clickable { onDone() }) },
+        title = { Text("Order By") },
+        onDismissRequest = { onDone(true) },
+        confirmButton = { Text("Apply", modifier = Modifier.clickable { onDone(false) }) },
         text = {
             Column {
                 repeat(filterList.size) {
@@ -366,7 +373,7 @@ fun Note(
     onClick: () -> Unit
 ) {
     Box(
-        modifier = Modifier.fillMaxWidth().heightIn(100.dp)
+        modifier = modifier.fillMaxWidth().heightIn(100.dp)
             .padding(horizontal = 15.dp, vertical = 8.dp)
             .background(color = color, shape = AbsoluteRoundedCornerShape(20f))
             .clickable(interactionSource = MutableInteractionSource(), indication = null) {
